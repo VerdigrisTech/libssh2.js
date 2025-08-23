@@ -56,11 +56,6 @@ jobs:
       - run:
           name: Set npm token
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - run:
-          name: Build types
-          command: |
-            npm ci
-            npm run build:types
       - when:
           condition: << pipeline.git.tag >>
           steps:

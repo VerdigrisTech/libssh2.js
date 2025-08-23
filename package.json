@@ -39,11 +39,11 @@
   "devDependencies": {
     "typescript": "^5.0.0"
   },
-  "types": "dist/index.d.ts",
+  "types": "index.d.ts",
   "files": [
     "dist/libssh2.js",
     "dist/libssh2.wasm",
-    "dist/index.d.ts"
+    "index.d.ts"
   ],
   "browserslist": [
     "> 1%",
