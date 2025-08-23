@@ -49,6 +49,7 @@ docker rm temp-container
 ### Build Details
 
 The build process:
+
 1. Sets up Ubuntu 22.04 with Node.js 22.14.0
 2. Installs Emscripten SDK
 3. Compiles OpenSSL 1.1.1w for WebAssembly
@@ -61,28 +62,28 @@ This package includes full TypeScript support with comprehensive type definition
 
 ### Package.json Types Field
 
-The package includes a `types` field in `package.json` that points to `dist/index.d.ts`, ensuring TypeScript automatically finds the type definitions:
+The package includes a `types` field in `package.json` that points to `index.d.ts`, ensuring TypeScript automatically finds the type definitions:
 
 ```json
 {
-  "types": "dist/index.d.ts"
+  "types": "index.d.ts"
 }
 ```
 
 ### TypeScript Usage
 
 ```typescript
-import SSH2Module from '@verdigris/libssh2.js';
+import SSH2Module from "@verdigris/libssh2.js";
 
 async function sshExample() {
   // Initialize the module
   const SSH2 = await SSH2Module();
 
   // Initialize libssh2
-  SSH2.ccall('ssh2_init', 'number', [], []);
+  SSH2.ccall("ssh2_init", "number", [], []);
 
   // Create session
-  const session = SSH2.ccall('ssh2_session_init_custom', 'number', [], []);
+  const session = SSH2.ccall("ssh2_session_init_custom", "number", [], []);
 
   // Set custom transport callbacks
   SSH2.customSend = (socket, buffer, length) => {
@@ -98,11 +99,20 @@ async function sshExample() {
   };
 
   // Perform handshake
-  const handshakeResult = SSH2.ccall('ssh2_session_handshake_custom', 'number', ['number'], [session]);
+  const handshakeResult = SSH2.ccall(
+    "ssh2_session_handshake_custom",
+    "number",
+    ["number"],
+    [session]
+  );
 
   // Authenticate
-  const authResult = SSH2.ccall('ssh2_userauth_password_custom', 'number',
-    ['number', 'string', 'string'], [session, 'username', 'password']);
+  const authResult = SSH2.ccall(
+    "ssh2_userauth_password_custom",
+    "number",
+    ["number", "string", "string"],
+    [session, "username", "password"]
+  );
 }
 ```
 
@@ -111,78 +121,112 @@ async function sshExample() {
 ### Basic SSH Connection
 
 ```javascript
-import SSH2Module from './libssh2.js';
+import SSH2Module from "./libssh2.js";
 
 // Initialize the module
 const SSH2 = await SSH2Module();
 
 // Initialize libssh2
-SSH2.ccall('ssh2_init', 'number', [], []);
+SSH2.ccall("ssh2_init", "number", [], []);
 
 // Create session
-const session = SSH2.ccall('ssh2_session_init_custom', 'number', [], []);
+const session = SSH2.ccall("ssh2_session_init_custom", "number", [], []);
 
 // Set custom transport callbacks
 SSH2.customSend = (socket, buffer, length) => {
-    // Implement your transport logic here
-    // For WebSocket: send data via WebSocket
-    return length;
+  // Implement your transport logic here
+  // For WebSocket: send data via WebSocket
+  return length;
 };
 
 SSH2.customRecv = (socket, buffer, length) => {
-    // Implement your transport logic here
-    // For WebSocket: receive data from WebSocket
-    return receivedLength;
+  // Implement your transport logic here
+  // For WebSocket: receive data from WebSocket
+  return receivedLength;
 };
 
 // Perform handshake
-const handshakeResult = SSH2.ccall('ssh2_session_handshake_custom', 'number', ['number'], [session]);
+const handshakeResult = SSH2.ccall(
+  "ssh2_session_handshake_custom",
+  "number",
+  ["number"],
+  [session]
+);
 
 // Authenticate
-const authResult = SSH2.ccall('ssh2_userauth_password_custom', 'number',
-    ['number', 'string', 'string'], [session, 'username', 'password']);
+const authResult = SSH2.ccall(
+  "ssh2_userauth_password_custom",
+  "number",
+  ["number", "string", "string"],
+  [session, "username", "password"]
+);
 ```
 
 ### Terminal Session
 
 ```javascript
 // Open channel
-const channel = SSH2.ccall('ssh2_channel_open_session_custom', 'number', ['number'], [session]);
+const channel = SSH2.ccall(
+  "ssh2_channel_open_session_custom",
+  "number",
+  ["number"],
+  [session]
+);
 
 // Request PTY
-SSH2.ccall('ssh2_channel_request_pty_custom', 'number', ['number', 'string'], [channel, 'xterm']);
+SSH2.ccall(
+  "ssh2_channel_request_pty_custom",
+  "number",
+  ["number", "string"],
+  [channel, "xterm"]
+);
 
 // Set PTY size
-SSH2.ccall('ssh2_channel_request_pty_size', 'number', ['number', 'number', 'number'], [channel, 80, 24]);
+SSH2.ccall(
+  "ssh2_channel_request_pty_size",
+  "number",
+  ["number", "number", "number"],
+  [channel, 80, 24]
+);
 
 // Start shell
-SSH2.ccall('ssh2_channel_shell_custom', 'number', ['number'], [channel]);
+SSH2.ccall("ssh2_channel_shell_custom", "number", ["number"], [channel]);
 
 // Read from channel
 const buffer = SSH2._malloc(1024);
-const bytesRead = SSH2.ccall('ssh2_channel_read_custom', 'number', ['number', 'number', 'number'], [channel, buffer, 1024]);
+const bytesRead = SSH2.ccall(
+  "ssh2_channel_read_custom",
+  "number",
+  ["number", "number", "number"],
+  [channel, buffer, 1024]
+);
 
 // Write to channel
-SSH2.ccall('ssh2_channel_write_custom', 'number', ['number', 'string', 'number'], [channel, 'ls -la\n', 8]);
+SSH2.ccall(
+  "ssh2_channel_write_custom",
+  "number",
+  ["number", "string", "number"],
+  [channel, "ls -la\n", 8]
+);
 ```
 
 ### WebSocket Bridge Example
 
 ```javascript
 // Set up WebSocket connection
-const ws = new WebSocket('ws://your-ssh-proxy-server');
+const ws = new WebSocket("ws://your-ssh-proxy-server");
 
 // Custom transport implementation
 SSH2.customSend = (socket, buffer, length) => {
-    const data = new Uint8Array(SSH2.HEAPU8.buffer, buffer, length);
-    ws.send(data);
-    return length;
+  const data = new Uint8Array(SSH2.HEAPU8.buffer, buffer, length);
+  ws.send(data);
+  return length;
 };
 
 SSH2.customRecv = (socket, buffer, length) => {
-    // Handle incoming WebSocket data
-    // Copy to the provided buffer
-    return receivedLength;
+  // Handle incoming WebSocket data
+  // Copy to the provided buffer
+  return receivedLength;
 };
 ```
 
@@ -190,39 +234,73 @@ SSH2.customRecv = (socket, buffer, length) => {
 
 ### Core Functions
 
-| Function | Description |
-|----------|-------------|
-| `ssh2_init()` | Initialize libssh2 library |
-| `ssh2_exit()` | Cleanup libssh2 library |
+| Function         | Description                |
+| ---------------- | -------------------------- |
+| `ssh2_init()`    | Initialize libssh2 library |
+| `ssh2_exit()`    | Cleanup libssh2 library    |
 | `ssh2_version()` | Get libssh2 version string |
 
 ### Session Management
 
-| Function | Description |
-|----------|-------------|
-| `ssh2_session_init_custom()` | Create new SSH session with custom transport |
-| `ssh2_session_handshake_custom()` | Perform SSH handshake |
-| `ssh2_session_set_blocking()` | Set session blocking mode |
-| `ssh2_session_free()` | Free session resources |
+| Function                          | Description                                  |
+| --------------------------------- | -------------------------------------------- |
+| `ssh2_session_init_custom()`      | Create new SSH session with custom transport |
+| `ssh2_session_handshake_custom()` | Perform SSH handshake                        |
+| `ssh2_session_set_blocking()`     | Set session blocking mode                    |
+| `ssh2_session_free()`             | Free session resources                       |
 
 ### Authentication
 
-| Function | Description |
-|----------|-------------|
-| `ssh2_userauth_password_custom()` | Authenticate with username/password |
-| `ssh2_userauth_publickey_fromfile()` | Authenticate with public key |
+| Function                             | Description                         |
+| ------------------------------------ | ----------------------------------- |
+| `ssh2_userauth_password_custom()`    | Authenticate with username/password |
+| `ssh2_userauth_publickey_fromfile()` | Authenticate with public key        |
 
 ### Channel Operations
 
-| Function | Description |
-|----------|-------------|
+| Function                             | Description              |
+| ------------------------------------ | ------------------------ |
 | `ssh2_channel_open_session_custom()` | Open new session channel |
-| `ssh2_channel_request_pty_custom()` | Request PTY allocation |
-| `ssh2_channel_shell_custom()` | Start interactive shell |
-| `ssh2_channel_read_custom()` | Read data from channel |
-| `ssh2_channel_write_custom()` | Write data to channel |
-| `ssh2_channel_close()` | Close channel |
-| `ssh2_channel_free()` | Free channel resources |
+| `ssh2_channel_request_pty_custom()`  | Request PTY allocation   |
+| `ssh2_channel_shell_custom()`        | Start interactive shell  |
+| `ssh2_channel_read_custom()`         | Read data from channel   |
+| `ssh2_channel_write_custom()`        | Write data to channel    |
+| `ssh2_channel_close()`               | Close channel            |
+| `ssh2_channel_free()`                | Free channel resources   |
+
+## Troubleshooting
+
+### TypeScript Module Resolution Issues
+
+If you encounter errors like:
+
+```text
+There are types at '.../index.d.ts', but this result could not be resolved when respecting package.json "exports"
+```
+
+**Solution**: Make sure you're using a recent version of TypeScript (4.7+) and that your `tsconfig.json` has modern module resolution:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES2020"
+  }
+}
+```
+
+### Import Issues
+
+The package uses ES modules. If you're using CommonJS, you may need to use dynamic imports:
+
+```typescript
+// ES Module import (recommended)
+import SSH2Module from "@verdigris/libssh2.js";
+
+// CommonJS dynamic import
+const SSH2Module = await import("@verdigris/libssh2.js");
+```
 
 ## Architecture
 
@@ -235,6 +313,7 @@ The project consists of three main components:
 ### Custom Transport
 
 The bindings implement a custom transport layer that allows:
+
 - WebSocket bridging for browser environments
 - Custom I/O handling for different network protocols
 - Integration with existing JavaScript networking code
@@ -262,7 +341,7 @@ The bindings implement a custom transport layer that allows:
 
 ### Project Structure
 
-```
+```text
 libssh2.js/
 ├── ssh2_bindings.c      # C bindings for libssh2
 ├── Dockerfile           # Build environment
@@ -280,6 +359,7 @@ libssh2.js/
 ### Customization
 
 The `ssh2_bindings.c` file can be modified to:
+
 - Add new SSH functionality
 - Customize transport behavior
 - Expose additional libssh2 features
@@ -305,6 +385,7 @@ This project is based on libssh2, which is licensed under the [BSD 3-Clause Lice
 ## Support
 
 For issues and questions:
+
 - Check the [libssh2 documentation](https://www.libssh2.org/docs.html)
 - Review the Emscripten [WebAssembly guide](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/WebAssembly.html)
 - Open an issue in this repository

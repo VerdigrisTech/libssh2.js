@@ -53,7 +53,8 @@
   "exports": {
     ".": {
       "import": "./dist/libssh2.js",
-      "require": "./dist/libssh2.js"
+      "require": "./dist/libssh2.js",
+      "types": "./index.d.ts"
     }
   },
   "sideEffects": false,
