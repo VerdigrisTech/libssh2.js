@@ -20,7 +20,7 @@ jobs:
           command: docker buildx create --name libssh2-builder --use
       - docker/build:
           image: verdigristech/libssh2-wasm
-          use-buildkit: true
+          use_buildkit: true
           extra_build_args:
             --progress=plain
             --cache-from=local,src=/tmp/buildx-cache
