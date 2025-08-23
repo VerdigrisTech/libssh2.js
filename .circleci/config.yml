@@ -32,6 +32,9 @@ jobs:
           command: |
             mkdir -p dist
             tar -xf libssh2.tar -C dist
+      - run:
+          name: Build types
+          command: npm run build:types
       - save_cache:
           paths:
             - /tmp/buildx-cache
@@ -41,6 +44,7 @@ jobs:
           paths:
             - libssh2.js
             - libssh2.wasm
+            - index.d.ts
       - store_artifacts:
           path: dist
 

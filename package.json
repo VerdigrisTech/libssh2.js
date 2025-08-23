@@ -8,7 +8,7 @@
     "build": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
-    "build-types": "tsc --declaration --emitDeclarationOnly --outDir dist"
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist"
   },
   "keywords": [
     "ssh",

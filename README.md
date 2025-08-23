@@ -72,39 +72,38 @@ The package includes a `types` field in `package.json` that points to `dist/inde
 ### TypeScript Usage
 
 ```typescript
-import { LibSSH2, SSHConnectionOptions } from '@verdigris/libssh2.js';
+import SSH2Module from '@verdigris/libssh2.js';
 
-// Initialize the library
-await LibSSH2.init();
+async function sshExample() {
+  // Initialize the module
+  const SSH2 = await SSH2Module();
 
-// Create a new session
-const session = await LibSSH2.createSession();
+  // Initialize libssh2
+  SSH2.ccall('ssh2_init', 'number', [], []);
 
-// Connect to SSH server
-const connectionResult = await LibSSH2.connect(session, {
-  host: 'example.com',
-  port: 22,
-  username: 'user'
-});
+  // Create session
+  const session = SSH2.ccall('ssh2_session_init_custom', 'number', [], []);
 
-if (connectionResult.success) {
+  // Set custom transport callbacks
+  SSH2.customSend = (socket, buffer, length) => {
+    // Implement your transport logic here
+    // For WebSocket: send data via WebSocket
+    return length;
+  };
+
+  SSH2.customRecv = (socket, buffer, length) => {
+    // Implement your transport logic here
+    // For WebSocket: receive data from WebSocket
+    return receivedLength;
+  };
+
+  // Perform handshake
+  const handshakeResult = SSH2.ccall('ssh2_session_handshake_custom', 'number', ['number'], [session]);
+
   // Authenticate
-  const authResult = await LibSSH2.authenticatePassword(
-    session,
-    'user',
-    'password'
-  );
-
-  if (authResult) {
-    // Execute command
-    const result = await LibSSH2.executeCommand(session, 'ls -la');
-    console.log(result.stdout);
-  }
+  const authResult = SSH2.ccall('ssh2_userauth_password_custom', 'number',
+    ['number', 'string', 'string'], [session, 'username', 'password']);
 }
-
-// Cleanup
-LibSSH2.closeSession(session);
-LibSSH2.exit();
 ```
 
 ## Usage
