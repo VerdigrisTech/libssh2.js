@@ -11,12 +11,30 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-libssh2-build-{{ .Branch }}
+            - v1-libssh2-build-
       - run:
-          name: Build libssh2.js
+          name: Set up Docker Buildx context
+          command: docker buildx create --name libssh2-builder --use
+      - docker/build:
+          image: verdigristech/libssh2-wasm
+          use-buildkit: true
+          extra_build_args:
+            --progress=plain
+            --cache-from=local,src=/tmp/buildx-cache
+            --cache-to=type=local,mode=max,dest=/tmp/buildx-cache
+            --output=type=tar,dest=libssh2.tar
+      - run:
+          name: Extract the build output
           command: |
-            docker build --progress=plain --output=type=tar,dest=libssh2.tar .
+            mkdir -p dist
             tar -xf libssh2.tar -C dist
-            rm libssh2.tar
+      - save_cache:
+          paths:
+            - /tmp/buildx-cache
+          key: v1-libssh2-build-{{ .Branch }}
       - persist_to_workspace:
           root: dist
           paths:
