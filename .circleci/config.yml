@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Build libssh2.js
           command: |
-            docker build --output=type=tar,dest=libssh2.tar .
+            docker build --progress=plain --output=type=tar,dest=libssh2.tar .
             tar -xf libssh2.tar -C dist
             rm libssh2.tar
       - persist_to_workspace:
