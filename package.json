@@ -1,6 +1,6 @@
 {
-  "name": "libssh2.js",
-  "version": "1.0.0",
+  "name": "@verdigris/libssh2.js",
+  "version": "0.1.0",
   "description": "A WebAssembly port of libssh2 that enables SSH client functionality in JavaScript environments",
   "main": "dist/libssh2.js",
   "type": "module",
