@@ -44,8 +44,28 @@ jobs:
       - store_artifacts:
           path: dist
 
+  publish:
+    docker:
+      - image: cimg/node:22.17
+    resource_class: small
+    steps:
+      - checkout
+      - attach_workspace:
+          at: dist
+      - run:
+          name: Set npm token
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+      - run:
+          name: Publish the build output to npm
+          command: |
+            npm publish
+
 # Workflows
 workflows:
   release:
     jobs:
       - build
+      - publish:
+          context: node.js package
+          requires:
+            - build
