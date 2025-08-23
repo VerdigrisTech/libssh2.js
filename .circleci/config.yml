@@ -55,17 +55,35 @@ jobs:
       - run:
           name: Set npm token
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - run:
-          name: Publish the build output to npm
-          command: |
-            npm publish --access public
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Publish the build output to npm
+                command: |
+                  npm publish --access public
+      - unless:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Publish the build output to npm (dry-run)
+                command: |
+                  npm publish --access public --dry-run
 
 # Workflows
 workflows:
   release:
     jobs:
-      - build
+      - build:
+          filters:
+            tags:
+              only: /.*/
       - publish:
           context: npmjs.com
           requires:
             - build
+          filters:
+            branches:
+              only: main
+            tags:
+              only: /.*/
