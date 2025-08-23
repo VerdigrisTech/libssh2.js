@@ -1,0 +1,32 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@3.0.0
+
+# Job definitions
+jobs:
+  build:
+    executor: docker/docker
+    resource_class: medium
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build libssh2.js
+          command: |
+            docker build --output=type=tar,dest=libssh2.tar .
+            tar -xf libssh2.tar -C dist
+            rm libssh2.tar
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - dist/libssh2.js
+            - dist/libssh2.wasm
+      - store_artifacts:
+          path: dist
+
+# Workflows
+workflows:
+  release:
+    jobs:
+      - build
