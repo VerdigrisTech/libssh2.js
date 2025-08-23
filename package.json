@@ -1,0 +1,55 @@
+{
+  "name": "libssh2.js",
+  "version": "1.0.0",
+  "description": "A WebAssembly port of libssh2 that enables SSH client functionality in JavaScript environments",
+  "main": "dist/libssh2.js",
+  "type": "module",
+  "scripts": {
+    "build": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ssh",
+    "ssh2",
+    "libssh2",
+    "wasm",
+    "webassembly",
+    "emscripten",
+    "terminal",
+    "pty",
+    "websocket",
+    "browser",
+    "nodejs"
+  ],
+  "author": "Andrew Jo <andrew@verdigris.co>",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VerdigrisTech/libssh2.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VerdigrisTech/libssh2.js/issues"
+  },
+  "homepage": "https://github.com/VerdigrisTech/libssh2.js#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "files": [
+    "dist/libssh2.js",
+    "dist/libssh2.wasm"
+  ],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/libssh2.js",
+      "require": "./dist/libssh2.js"
+    }
+  },
+  "sideEffects": false,
+  "packageManager": "pnpm@10.14.0+sha256.297534e65d5842450539c1e8022c8831ab5e1fe2eb74664787a815519542d620"
+}
