@@ -66,6 +66,6 @@ workflows:
     jobs:
       - build
       - publish:
-          context: node.js package
+          context: npmjs.com
           requires:
             - build
