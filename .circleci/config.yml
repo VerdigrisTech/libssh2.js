@@ -39,8 +39,8 @@ jobs:
       - persist_to_workspace:
           root: dist
           paths:
-            - dist/libssh2.js
-            - dist/libssh2.wasm
+            - libssh2.js
+            - libssh2.wasm
       - store_artifacts:
           path: dist
 
