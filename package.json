@@ -1,12 +1,14 @@
 {
   "name": "@verdigris/libssh2.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A WebAssembly port of libssh2 that enables SSH client functionality in JavaScript environments",
   "main": "dist/libssh2.js",
   "type": "module",
   "scripts": {
     "build": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "build-types": "tsc --declaration --emitDeclarationOnly --outDir dist"
   },
   "keywords": [
     "ssh",
@@ -34,9 +36,14 @@
   "engines": {
     "node": ">=22.0.0"
   },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "types": "dist/index.d.ts",
   "files": [
     "dist/libssh2.js",
-    "dist/libssh2.wasm"
+    "dist/libssh2.wasm",
+    "dist/index.d.ts"
   ],
   "browserslist": [
     "> 1%",

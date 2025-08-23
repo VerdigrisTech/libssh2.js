@@ -21,6 +21,7 @@ libssh2.js provides a complete SSH client implementation compiled to WebAssembly
 - 🔑 **Multiple Auth Methods**: Password and public key authentication
 - 📱 **Browser Compatible**: Works in modern browsers via WebSocket
 - 🚀 **Node.js Ready**: Native performance in Node.js environments
+- 📝 **TypeScript Support**: Full type definitions included
 
 ## Prerequisites
 
@@ -53,6 +54,58 @@ The build process:
 3. Compiles OpenSSL 1.1.1w for WebAssembly
 4. Compiles libssh2 with OpenSSL backend
 5. Compiles the custom bindings to WebAssembly
+
+## TypeScript Support
+
+This package includes full TypeScript support with comprehensive type definitions. The types are automatically included when you install the package and will be resolved by TypeScript automatically.
+
+### Package.json Types Field
+
+The package includes a `types` field in `package.json` that points to `dist/index.d.ts`, ensuring TypeScript automatically finds the type definitions:
+
+```json
+{
+  "types": "dist/index.d.ts"
+}
+```
+
+### TypeScript Usage
+
+```typescript
+import { LibSSH2, SSHConnectionOptions } from '@verdigris/libssh2.js';
+
+// Initialize the library
+await LibSSH2.init();
+
+// Create a new session
+const session = await LibSSH2.createSession();
+
+// Connect to SSH server
+const connectionResult = await LibSSH2.connect(session, {
+  host: 'example.com',
+  port: 22,
+  username: 'user'
+});
+
+if (connectionResult.success) {
+  // Authenticate
+  const authResult = await LibSSH2.authenticatePassword(
+    session,
+    'user',
+    'password'
+  );
+
+  if (authResult) {
+    // Execute command
+    const result = await LibSSH2.executeCommand(session, 'ls -la');
+    console.log(result.stdout);
+  }
+}
+
+// Cleanup
+LibSSH2.closeSession(session);
+LibSSH2.exit();
+```
 
 ## Usage
 
