@@ -13,7 +13,8 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           keys:
-            - v1-libssh2-build-{{ .Branch }}
+            - &cache-key v1-libssh2-build-{{ .Branch }}-{{ .Revision }}
+            - v1-libssh2-build-{{ .Branch }}-
             - v1-libssh2-build-
       - run:
           name: Set up Docker Buildx context
@@ -34,7 +35,7 @@ jobs:
       - save_cache:
           paths:
             - /tmp/buildx-cache
-          key: v1-libssh2-build-{{ .Branch }}
+          key: *cache-key
       - persist_to_workspace:
           root: dist
           paths:
