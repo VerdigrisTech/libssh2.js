@@ -32,9 +32,6 @@ jobs:
           command: |
             mkdir -p dist
             tar -xf libssh2.tar -C dist
-      - run:
-          name: Build types
-          command: npm run build:types
       - save_cache:
           paths:
             - /tmp/buildx-cache
@@ -59,6 +56,9 @@ jobs:
       - run:
           name: Set npm token
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+      - run:
+          name: Build types
+          command: npm run build:types
       - when:
           condition: << pipeline.git.tag >>
           steps:
