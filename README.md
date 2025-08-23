@@ -325,6 +325,8 @@ The bindings implement a custom transport layer that allows:
 - **Safari**: 11+ (WebAssembly support)
 - **Edge**: 79+ (WebAssembly support)
 
+**Note**: The package is specifically built for browser environments with `-s ENVIRONMENT=web` to ensure compatibility with bundlers like Webpack, Vite, and Next.js.
+
 ## Node.js Support
 
 - **Node.js**: 22.14.0+ (for building)

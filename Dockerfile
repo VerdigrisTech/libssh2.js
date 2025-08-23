@@ -90,6 +90,7 @@ RUN cd $WORKSPACE && \
     -lssh2 -lssl -lcrypto \
     -s MODULARIZE=1 \
     -s EXPORT_ES6=1 \
+    -s ENVIRONMENT=web \
     -s EXPORTED_FUNCTIONS='["_malloc","_free"]' \
     -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","getValue","setValue","FS"]' \
     -s ALLOW_MEMORY_GROWTH=1 \
