@@ -16,16 +16,22 @@ EMSCRIPTEN_KEEPALIVE
 int custom_send(libssh2_socket_t socket, const void *buffer, size_t length, int flags, void **abstract) {
     // This will be called from JavaScript via EM_ASM
     return EM_ASM_INT({
-        return Module.customSend($0, $1);
-    }, (int)buffer, (int)length);
+        if (Module.customSend) {
+            return Module.customSend($0, $1, $2);
+        }
+        return $2; // Default: assume all bytes sent
+    }, (int)socket, (int)buffer, (int)length);
 }
 
 EMSCRIPTEN_KEEPALIVE
 int custom_recv(libssh2_socket_t socket, void *buffer, size_t length, int flags, void **abstract) {
     // This will be called from JavaScript via EM_ASM
     return EM_ASM_INT({
-        return Module.customRecv($0, $1);
-    }, (int)buffer, (int)length);
+        if (Module.customRecv) {
+            return Module.customRecv($0, $1, $2);
+        }
+        return 0; // Default: no bytes received
+    }, (int)socket, (int)buffer, (int)length);
 }
 
 // Initialize libssh2
