@@ -92,7 +92,7 @@ RUN cd $WORKSPACE && \
     -s EXPORT_ES6=1 \
     -s ENVIRONMENT=web \
     -s EXPORTED_FUNCTIONS='["_malloc","_free"]' \
-    -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","getValue","setValue","FS"]' \
+    -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","getValue","setValue","FS","HEAPU8"]' \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s INITIAL_MEMORY=32MB \
     -s STACK_SIZE=2MB \
