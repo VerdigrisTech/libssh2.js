@@ -5,7 +5,7 @@
   "main": "dist/libssh2.js",
   "type": "module",
   "scripts": {
-    "preinstall": "",
+    "prepare": "./download-vendors.sh",
     "build": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
@@ -61,6 +61,10 @@
   "sideEffects": false,
   "packageManager": "pnpm@10.14.0+sha256.297534e65d5842450539c1e8022c8831ab5e1fe2eb74664787a815519542d620",
   "vendors": {
+    "openssl": {
+      "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.2/openssl-3.5.2.tar.gz",
+      "sha256": "c53a47e5e441c930c3928cf7bf6fb00e5d129b630e0aa873b08258656e7345ec"
+    },
     "zlib": {
       "url": "https://www.zlib.net/zlib-1.3.1.tar.gz",
       "sha256": "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23"
