@@ -78,11 +78,11 @@ RUN git clone https://github.com/libssh2/libssh2.git && \
     emmake make install
 
 # Copy the SSH2 bindings
-COPY ssh2_bindings.c ${WORKSPACE}/ssh2_bindings.c
+COPY src/ssh2_bindings.c ${WORKSPACE}/src/ssh2_bindings.c
 
 # Compile the WebAssembly module with bindings
 RUN cd $WORKSPACE && \
-  emcc ssh2_bindings.c \
+  emcc src/ssh2_bindings.c \
     -o libssh2.js \
     -I$WORKSPACE/libssh2/install/include \
     -L$WORKSPACE/libssh2/install/lib \

@@ -17,10 +17,11 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "dist/**/*",
+    "src/**/*",
     "index.d.ts"
   ],
   "exclude": [
+    "dist",
     "node_modules"
   ]
 }
