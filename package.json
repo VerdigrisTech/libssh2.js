@@ -1,5 +1,11 @@
 {
   "devDependencies": {
-    "@changesets/cli": "^2.29.6"
-  }
+    "@changesets/cli": "^2.29.6",
+    "@eslint/js": "^9.34.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "typescript-eslint": "^8.41.0"
+  },
+  "packageManager": "pnpm@10.14.0+sha256.297534e65d5842450539c1e8022c8831ab5e1fe2eb74664787a815519542d620"
 }
