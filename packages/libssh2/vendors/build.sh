@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EMPORTS="$SCRIPT_DIR/tmp/emscripten"
+EMPORTS="$SCRIPT_DIR/../tmp/emscripten"
 
 # Colors for output
 RED='\033[0;31m'
@@ -94,12 +94,12 @@ build_vendor() {
 
 # Build zlib function
 build_zlib() {
-    if [ -d "$SCRIPT_DIR/vendor/zlib" ]; then
+    if [ -d "$SCRIPT_DIR/zlib" ]; then
         if [ -f "$EMPORTS/lib/libz.a" ]; then
             log_info "zlib already built, skipping..."
         else
             log_info "Building zlib..."
-            cd "$SCRIPT_DIR/vendor/zlib"
+            cd "$SCRIPT_DIR/zlib"
 
             # Clean any previous build
             emmake make distclean 2>/dev/null || true
@@ -127,19 +127,19 @@ build_zlib() {
             log_success "zlib build completed"
         fi
     else
-        log_error "vendor/zlib directory not found. Run ./download-vendors.sh first."
+        log_error "zlib directory not found. Run ./download-vendors.sh first."
         return 1
     fi
 }
 
 # Build OpenSSL function
 build_openssl() {
-    if [ -d "$SCRIPT_DIR/vendor/openssl" ]; then
+    if [ -d "$SCRIPT_DIR/openssl" ]; then
         if [ -f "$EMPORTS/lib/libssl.a" ] && [ -f "$EMPORTS/lib/libcrypto.a" ]; then
             log_info "OpenSSL already built, skipping..."
         else
             log_info "Building OpenSSL..."
-            cd "$SCRIPT_DIR/vendor/openssl"
+            cd "$SCRIPT_DIR/openssl"
 
             if ! emconfigure ./Configure linux-generic32 -no-asm -no-threads -no-engine -no-hw -no-weak-ssl-ciphers -no-dtls -no-shared --with-zlib-include="$EMPORTS/include" --with-zlib-lib="$EMPORTS/lib" --prefix="$EMPORTS"; then
                 log_error "OpenSSL configure failed"
@@ -164,19 +164,19 @@ build_openssl() {
             log_success "OpenSSL build completed"
         fi
     else
-        log_warning "vendor/openssl directory not found. Skipping OpenSSL build."
+        log_warning "openssl directory not found. Skipping OpenSSL build."
         return 1
     fi
 }
 
 # Build libssh2 function
 build_libssh2() {
-    if [ -d "$SCRIPT_DIR/vendor/libssh2" ]; then
+    if [ -d "$SCRIPT_DIR/libssh2" ]; then
         if [ -f "$EMPORTS/lib/libssh2.a" ]; then
             log_info "libssh2 already built, skipping..."
         else
             log_info "Building libssh2..."
-            cd "$SCRIPT_DIR/vendor/libssh2"
+            cd "$SCRIPT_DIR/libssh2"
             mkdir -p build-wasm
             cd build-wasm
 
@@ -212,7 +212,7 @@ build_libssh2() {
             log_success "libssh2 build completed"
         fi
     else
-        log_warning "vendor/libssh2 directory not found. Skipping libssh2 build."
+        log_warning "libssh2 directory not found. Skipping libssh2 build."
         return 1
     fi
 }
