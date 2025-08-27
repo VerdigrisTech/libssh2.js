@@ -110,21 +110,6 @@ build_libssh2_wasm() {
     log_success "libssh2.js WebAssembly wrapper built successfully"
 }
 
-generate_types() {
-    log_info "Generating TypeScript declarations..."
-
-    if command -v tsc &> /dev/null; then
-        if ! tsc --declaration --emitDeclarationOnly --outDir dist; then
-            log_error "Failed to generate TypeScript declarations"
-            exit 1
-        fi
-        log_success "TypeScript declarations generated successfully"
-    else
-        log_warning "TypeScript compiler not found, skipping type generation"
-        log_info "Run 'npm run build:types' manually to generate types"
-    fi
-}
-
 # Handle script arguments
 case "${1:-}" in
     --help|-h)
@@ -140,12 +125,10 @@ case "${1:-}" in
     --with-types)
         check_emscripten
         build_libssh2_wasm
-        generate_types
         ;;
     "")
         check_emscripten
         build_libssh2_wasm
-        generate_types
         ;;
     *)
         log_error "Unknown argument: $1"
