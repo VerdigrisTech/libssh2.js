@@ -3,8 +3,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENDOR_DIR="$SCRIPT_DIR/vendor"
-PACKAGE_JSON="$SCRIPT_DIR/package.json"
+VENDOR_DIR="$SCRIPT_DIR"
+PACKAGE_JSON="$SCRIPT_DIR/../package.json"
 
 # Colors for output
 RED='\033[0;31m'
@@ -32,7 +32,7 @@ log_error() {
 # Check if required commands are available
 check_dependencies() {
     local deps=("curl" "jq" "sha256sum" "tar")
-    
+
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
             log_error "$dep is required but not installed."
@@ -45,7 +45,7 @@ check_dependencies() {
 verify_hash() {
     local file="$1"
     local expected_hash="$2"
-    
+
     local actual_hash
     if command -v sha256sum &> /dev/null; then
         actual_hash=$(sha256sum "$file" | cut -d' ' -f1)
@@ -55,7 +55,7 @@ verify_hash() {
         log_error "Neither sha256sum nor shasum available for hash verification"
         return 1
     fi
-    
+
     if [ "$actual_hash" = "$expected_hash" ]; then
         log_success "Hash verification passed for $(basename "$file")"
         return 0
@@ -71,9 +71,9 @@ verify_hash() {
 download_file() {
     local url="$1"
     local output_file="$2"
-    
+
     log_info "Downloading $(basename "$output_file") from $url"
-    
+
     if curl --fail --location --progress-bar --output "$output_file" "$url"; then
         log_success "Downloaded $(basename "$output_file")"
         return 0
@@ -88,15 +88,15 @@ extract_archive() {
     local archive="$1"
     local extract_dir="$2"
     local vendor_name="$3"
-    
+
     log_info "Extracting $(basename "$archive") to $extract_dir"
-    
+
     # Remove existing directory if it exists
     if [ -d "$extract_dir/$vendor_name" ]; then
         log_warning "Removing existing $vendor_name directory"
         rm -rf "$extract_dir/$vendor_name"
     fi
-    
+
     case "$archive" in
         *.tar.gz|*.tgz)
             if tar -xzf "$archive" -C "$extract_dir"; then
@@ -132,7 +132,7 @@ extract_archive() {
             return 1
             ;;
     esac
-    
+
     log_error "Failed to extract $(basename "$archive")"
     return 1
 }
@@ -141,29 +141,29 @@ extract_archive() {
 process_vendor() {
     local vendor_name="$1"
     local vendor_config="$2"
-    
+
     local url
     local sha256
-    
+
     url=$(echo "$vendor_config" | jq -r '.url')
     sha256=$(echo "$vendor_config" | jq -r '.sha256 // empty')
-    
+
     if [ "$url" = "null" ] || [ -z "$url" ]; then
         log_error "No URL specified for vendor $vendor_name"
         return 1
     fi
-    
+
     local filename
     filename=$(basename "$url")
     local archive_path="$VENDOR_DIR/$filename"
-    
+
     log_info "Processing vendor: $vendor_name"
-    
+
     # Download the file
     if ! download_file "$url" "$archive_path"; then
         return 1
     fi
-    
+
     # Verify hash if provided
     if [ -n "$sha256" ] && [ "$sha256" != "null" ]; then
         if ! verify_hash "$archive_path" "$sha256"; then
@@ -174,12 +174,12 @@ process_vendor() {
     else
         log_warning "No hash provided for $vendor_name, skipping verification"
     fi
-    
+
     # Extract the archive
     if ! extract_archive "$archive_path" "$VENDOR_DIR" "$vendor_name"; then
         return 1
     fi
-    
+
     log_success "Successfully processed vendor: $vendor_name"
     return 0
 }
@@ -187,59 +187,59 @@ process_vendor() {
 # Main function
 main() {
     log_info "Starting vendor download and extraction process"
-    
+
     # Check dependencies
     check_dependencies
-    
+
     # Create vendor directory if it doesn't exist
     mkdir -p "$VENDOR_DIR"
-    
+
     # Check if package.json exists
     if [ ! -f "$PACKAGE_JSON" ]; then
         log_error "package.json not found at $PACKAGE_JSON"
         exit 1
     fi
-    
+
     # Check if vendors section exists
     if ! jq -e '.vendors' "$PACKAGE_JSON" >/dev/null 2>&1; then
         log_error "No 'vendors' section found in package.json"
         exit 1
     fi
-    
+
     # Get list of vendors
     local vendors
     vendors=$(jq -r '.vendors | keys[]' "$PACKAGE_JSON")
-    
+
     if [ -z "$vendors" ]; then
         log_warning "No vendors defined in package.json"
         exit 0
     fi
-    
+
     local failed_vendors=()
     local successful_vendors=()
-    
+
     # Process each vendor
     while IFS= read -r vendor_name; do
         local vendor_config
         vendor_config=$(jq -c ".vendors[\"$vendor_name\"]" "$PACKAGE_JSON")
-        
+
         if process_vendor "$vendor_name" "$vendor_config"; then
             successful_vendors+=("$vendor_name")
         else
             failed_vendors+=("$vendor_name")
         fi
-        
+
         echo # Add blank line between vendors
     done <<< "$vendors"
-    
+
     # Summary
     echo "========================================="
     log_info "Summary:"
-    
+
     if [ ${#successful_vendors[@]} -gt 0 ]; then
         log_success "Successfully processed: ${successful_vendors[*]}"
     fi
-    
+
     if [ ${#failed_vendors[@]} -gt 0 ]; then
         log_error "Failed to process: ${failed_vendors[*]}"
         exit 1
