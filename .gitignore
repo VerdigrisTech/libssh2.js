@@ -2,5 +2,6 @@
 dist/
 node_modules/
 tmp/
-vendor/
-!vendor/.gitkeep
+vendors/
+!vendors/build.sh
+!vendors/download.sh
