@@ -118,12 +118,12 @@ build_zlib() {
                 log_error "zlib build failed"
                 return 1
             fi
-            
+
             if ! emmake make install; then
                 log_error "zlib install failed"
                 return 1
             fi
-            
+
             log_success "zlib build completed"
         fi
     else
@@ -140,7 +140,7 @@ build_openssl() {
         else
             log_info "Building OpenSSL..."
             cd "$SCRIPT_DIR/vendor/openssl"
-            
+
             if ! emconfigure ./Configure linux-generic32 -no-asm -no-threads -no-engine -no-hw -no-weak-ssl-ciphers -no-dtls -no-shared --with-zlib-include="$EMPORTS/include" --with-zlib-lib="$EMPORTS/lib" --prefix="$EMPORTS"; then
                 log_error "OpenSSL configure failed"
                 return 1
@@ -150,17 +150,17 @@ build_openssl() {
             sed -i.bak "s|CC=\$(CROSS_COMPILE)$(which emcc)|CC=$(which emcc)|" Makefile
             sed -i.bak2 "s|AR=\$(CROSS_COMPILE)$(which emar)|AR=$(which emar)|" Makefile
             sed -i.bak3 "s|RANLIB=\$(CROSS_COMPILE)$(which emranlib)|RANLIB=$(which emranlib)|" Makefile
-            
+
             if ! emmake make build_sw -j4; then
                 log_error "OpenSSL build failed"
                 return 1
             fi
-            
+
             if ! emmake make install_sw; then
                 log_error "OpenSSL install failed"
                 return 1
             fi
-            
+
             log_success "OpenSSL build completed"
         fi
     else
@@ -179,12 +179,13 @@ build_libssh2() {
             cd "$SCRIPT_DIR/vendor/libssh2"
             mkdir -p build-wasm
             cd build-wasm
-            
+
             if ! emcmake cmake .. \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DBUILD_SHARED_LIBS=OFF \
                 -DBUILD_EXAMPLES=OFF \
                 -DBUILD_TESTING=OFF \
+                -DCLEAR_MEMORY=ON \
                 -DENABLE_ZLIB_COMPRESSION=ON \
                 -DCRYPTO_BACKEND=OpenSSL \
                 -DOPENSSL_ROOT_DIR="$EMPORTS" \
@@ -197,17 +198,17 @@ build_libssh2() {
                 log_error "libssh2 cmake configure failed"
                 return 1
             fi
-            
+
             if ! emmake make -j$(nproc); then
                 log_error "libssh2 build failed"
                 return 1
             fi
-            
+
             if ! emmake make install; then
                 log_error "libssh2 install failed"
                 return 1
             fi
-            
+
             log_success "libssh2 build completed"
         fi
     else
