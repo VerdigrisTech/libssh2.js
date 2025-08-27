@@ -64,6 +64,12 @@ void ssh2_session_free(LIBSSH2_SESSION* session) {
     }
 }
 
+// Set session callback
+EMSCRIPTEN_KEEPALIVE
+void ssh2_session_callback_set(LIBSSH2_SESSION* session, int cbtype, void* callback) {
+    libssh2_session_callback_set(session, cbtype, callback);
+}
+
 // Perform handshake
 EMSCRIPTEN_KEEPALIVE
 int ssh2_session_handshake(LIBSSH2_SESSION* session, int socket) {

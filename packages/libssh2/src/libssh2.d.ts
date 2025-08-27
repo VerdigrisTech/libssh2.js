@@ -190,6 +190,7 @@ declare module '@verdigris/libssh2.js' {
     ssh2_session_init(): LIBSSH2_SESSION;
     ssh2_session_handshake(session: LIBSSH2_SESSION): number;
     ssh2_session_set_blocking(session: LIBSSH2_SESSION, blocking: number): number;
+    ssh2_session_callback_set(session: LIBSSH2_SESSION, cbtype: number, callback: (...args: any[]) => any): void;
     ssh2_session_last_errno(session: LIBSSH2_SESSION): number;
     ssh2_session_last_error(session: LIBSSH2_SESSION): string;
     ssh2_session_disconnect(session: LIBSSH2_SESSION, reason: string): number;
