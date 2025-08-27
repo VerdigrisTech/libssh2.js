@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EMPORTS="$SCRIPT_DIR/../tmp/emscripten"
+EMPORTS="$SCRIPT_DIR/.tmp/emscripten"
 
 # Colors for output
 RED='\033[0;31m'
