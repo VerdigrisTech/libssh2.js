@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EMPORTS="$SCRIPT_DIR/tmp/emscripten"
+EMPORTS="$SCRIPT_DIR/vendors/.tmp/emscripten"
 
 # Colors for output
 RED='\033[0;31m'
@@ -81,6 +81,8 @@ clean() {
 
 build_libssh2_wasm() {
     log_info "Building libssh2.js WebAssembly wrapper..."
+
+    mkdir -p dist
 
     if ! emcc src/libssh2-bindings.c \
       -o dist/libssh2.js \
