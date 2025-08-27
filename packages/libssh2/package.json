@@ -7,7 +7,8 @@
   "scripts": {
     "prepare": "./download-vendors.sh",
     "prebuild": "pnpm build:vendors",
-    "build": "./build.sh && tsc --declaration --outDir dist",
+    "build": "./build.sh",
+    "postbuild": "cp src/libssh2.d.ts dist/libssh2.d.ts",
     "build:vendors": "./build-vendors.sh",
     "build:docker": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
@@ -43,7 +44,7 @@
   "devDependencies": {
     "typescript": "^5.0.0"
   },
-  "types": "index.d.ts",
+  "types": "dist/libssh2.d.ts",
   "files": [
     "dist/libssh2.js",
     "dist/libssh2.wasm",
@@ -58,7 +59,7 @@
     ".": {
       "import": "./dist/libssh2.js",
       "require": "./dist/libssh2.js",
-      "types": "./index.d.ts"
+      "types": "./dist/libssh2.d.ts"
     }
   },
   "sideEffects": false,
