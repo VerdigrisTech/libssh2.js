@@ -187,8 +187,8 @@ declare module '@verdigris/libssh2.js' {
     ssh2_version(): string;
 
     // Session management
-    ssh2_session_init_custom(): LIBSSH2_SESSION;
-    ssh2_session_handshake_custom(session: LIBSSH2_SESSION): number;
+    ssh2_session_init(): LIBSSH2_SESSION;
+    ssh2_session_handshake(session: LIBSSH2_SESSION): number;
     ssh2_session_set_blocking(session: LIBSSH2_SESSION, blocking: number): number;
     ssh2_session_last_errno(session: LIBSSH2_SESSION): number;
     ssh2_session_last_error(session: LIBSSH2_SESSION): string;
@@ -200,7 +200,7 @@ declare module '@verdigris/libssh2.js' {
     // Authentication
     ssh2_userauth_list(session: LIBSSH2_SESSION, username: string): string;
     ssh2_userauth_authenticated(session: LIBSSH2_SESSION): number;
-    ssh2_userauth_password_custom(session: LIBSSH2_SESSION, username: string, password: string): number;
+    ssh2_userauth_password(session: LIBSSH2_SESSION, username: string, password: string): number;
     ssh2_userauth_publickey_fromfile(
       session: LIBSSH2_SESSION,
       username: string,
@@ -222,7 +222,7 @@ declare module '@verdigris/libssh2.js' {
     ): number;
 
     // Channel management
-    ssh2_channel_open_session_custom(session: LIBSSH2_SESSION): LIBSSH2_CHANNEL;
+    ssh2_channel_open_session(session: LIBSSH2_SESSION): LIBSSH2_CHANNEL;
     ssh2_channel_direct_tcpip(
       session: LIBSSH2_SESSION,
       host: string,
@@ -230,17 +230,17 @@ declare module '@verdigris/libssh2.js' {
       shost: string,
       sport: number
     ): LIBSSH2_CHANNEL;
-    ssh2_channel_request_pty_custom(channel: LIBSSH2_CHANNEL, term: string): number;
+    ssh2_channel_request_pty(channel: LIBSSH2_CHANNEL, term: string): number;
     ssh2_channel_request_pty_size(channel: LIBSSH2_CHANNEL, width: number, height: number): number;
-    ssh2_channel_shell_custom(channel: LIBSSH2_CHANNEL): number;
+    ssh2_channel_shell(channel: LIBSSH2_CHANNEL): number;
     ssh2_channel_exec(channel: LIBSSH2_CHANNEL, command: string): number;
     ssh2_channel_subsystem(channel: LIBSSH2_CHANNEL, subsystem: string): number;
     ssh2_channel_process_startup(channel: LIBSSH2_CHANNEL, request: string, message: string): number;
 
     // Channel I/O
-    ssh2_channel_read_custom(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
+    ssh2_channel_read(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
     ssh2_channel_read_stderr(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
-    ssh2_channel_write_custom(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
+    ssh2_channel_write(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
     ssh2_channel_write_stderr(channel: LIBSSH2_CHANNEL, buf: number, buflen: number): number;
     ssh2_channel_flush(channel: LIBSSH2_CHANNEL): number;
     ssh2_channel_flush_stderr(channel: LIBSSH2_CHANNEL): number;
