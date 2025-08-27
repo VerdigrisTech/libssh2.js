@@ -1,0 +1,6 @@
+.circleci
+.git
+.github
+.vscode
+dist
+node_modules
