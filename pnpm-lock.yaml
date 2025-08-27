@@ -23,6 +23,10 @@ importers:
       '@verdigris/libssh2.js':
         specifier: workspace:*
         version: link:../libssh2
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.2
 
 packages:
 
