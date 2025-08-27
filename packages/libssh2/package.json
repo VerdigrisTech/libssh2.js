@@ -5,11 +5,11 @@
   "main": "dist/libssh2.js",
   "type": "module",
   "scripts": {
-    "prepare": "./download-vendors.sh",
+    "prepare": "./vendors/download.sh",
     "prebuild": "pnpm build:vendors",
     "build": "./build.sh",
     "postbuild": "cp src/libssh2.d.ts dist/libssh2.d.ts",
-    "build:vendors": "./build-vendors.sh",
+    "build:vendors": "./vendors/build.sh",
     "build:docker": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "clean": "rm -rf dist",
