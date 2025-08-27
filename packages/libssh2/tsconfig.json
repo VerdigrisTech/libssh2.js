@@ -6,7 +6,7 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "packages/libssh2/src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -17,11 +17,11 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*",
+    "packages/libssh2/src/**/*",
+    "dist/libssh2.js",
     "index.d.ts"
   ],
   "exclude": [
-    "dist",
     "node_modules"
   ]
 }

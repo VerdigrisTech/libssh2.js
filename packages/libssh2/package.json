@@ -6,11 +6,13 @@
   "type": "module",
   "scripts": {
     "prepare": "./download-vendors.sh",
+    "prebuild": "pnpm build:vendors",
+    "build": "./build.sh && tsc --declaration --outDir dist",
     "build:vendors": "./build-vendors.sh",
-    "build": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
+    "build:docker": "docker build --output=type=tar,dest=libssh2.tar . && tar -xf libssh2.tar -C dist && rm libssh2.tar",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist"
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "ssh",
