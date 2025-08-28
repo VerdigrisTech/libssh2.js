@@ -65,7 +65,7 @@ jobs:
             pnpm -r build
       - save_cache:
           paths:
-            - vendors
+            - packages/libssh2/vendors
           key: *cache-vendors-key
       - persist_to_workspace:
           root: packages/libssh2/dist
