@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Create emscripten directory
           command: |
-            mkdir -p /opt/emscripten
+            sudo mkdir -p /opt/emscripten
             whoami
             chmod -R 755 /opt/emscripten
       - run:
