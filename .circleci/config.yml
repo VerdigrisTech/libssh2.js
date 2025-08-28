@@ -1,7 +1,27 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@3.0.0
+  gh: circleci/github-cli@2.7.1
+
+commands:
+  install-pnpm:
+    description: |
+      Installs pnpm with Corepack and activates it
+    steps:
+      - run:
+          name: Install pnpm with Corepack
+          command: |
+            npm install -g corepack@latest
+            corepack enable
+            corepack prepare pnpm@latest-10 --activate
+            pnpm config set store-dir .pnpm-store
+  npm-auth:
+    description: |
+      Sets up npm authentication
+    steps:
+      - run:
+          name: Set npm token
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 
 # Job definitions
 jobs:
@@ -19,13 +39,7 @@ jobs:
             cd emsdk
             ./emsdk install latest
             ./emsdk activate latest
-      - run:
-          name: Install pnpm with Corepack
-          command: |
-            npm install -g corepack@latest
-            corepack enable
-            corepack prepare pnpm@latest-10 --activate
-            pnpm config set store-dir .pnpm-store
+      - install-pnpm
       - restore_cache:
           keys:
             - &cache-pnpm-key v1-libssh2-pnpm-{{ .Branch }}-{{ checksum "pnpm-lock.yaml" }}
@@ -62,69 +76,77 @@ jobs:
       - store_artifacts:
           path: packages/libssh2/dist
 
-      # - run:
-      #     name: Set up Docker Buildx context
-      #     command: docker buildx create --name libssh2-builder --use
-      # - docker/build:
-      #     image: verdigristech/libssh2-wasm
-      #     use_buildkit: true
-      #     extra_build_args:
-      #       --progress=plain
-      #       --cache-from=type=local,src=/tmp/buildx-cache
-      #       --cache-to=type=local,mode=max,dest=/tmp/buildx-cache
-      #       --output=type=tar,dest=libssh2.tar
-      # - run:
-      #     name: Extract the build output
-      #     command: |
-      #       mkdir -p dist
-      #       tar -xf libssh2.tar -C dist
-      # - save_cache:
-      #     paths:
-      #       - /tmp/buildx-cache
-      #     key: *cache-build-key
-      # - persist_to_workspace:
-      #     root: dist
-      #     paths:
-      #       - libssh2.js
-      #       - libssh2.wasm
-      #       - index.d.ts
-      # - store_artifacts:
-      #     path: dist
-
   publish:
     docker:
       - image: cimg/node:22.17
     resource_class: small
     steps:
       - checkout
+      - gh/setup
       - attach_workspace:
-          at: dist
+          at: "."
+      - restore_cache:
+          keys:
+            - &cache-pnpm-key v1-libssh2-pnpm-{{ .Branch }}-{{ checksum "pnpm-lock.yaml" }}
+            - v1-libssh2-pnpm-{{ .Branch }}
+            - v1-libssh2-pnpm-
+      - install-pnpm
+      - npm-auth
       - run:
-          name: Set npm token
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - when:
-          condition: << pipeline.git.tag >>
-          steps:
-            - run:
-                name: Publish the build output to npm
-                command: |
-                  npm publish --access public
-      - unless:
-          condition: << pipeline.git.tag >>
-          steps:
-            - run:
-                name: Publish the build output to npm (dry-run)
-                command: |
-                  npm publish --access public --dry-run
+          name: Bump versions (no-op if no changeset)
+          # Bump versions and commit them (see .changeset/config.json)
+          command: |
+            pnpm changeset version && git push origin main
+      - run:
+          name: Re-install dependencies in case of version bump
+          command: pnpm i -r
+      - save_cache:
+          paths:
+            - .pnpm-store
+            - packages/libssh2/vendors
+          key: *cache-pnpm-key
+      - run:
+          name: Publish packages (no-op if nothing to publish)
+          command: pnpm changeset publish
+      - run:
+          name: Sync tags
+          command: git push --follow-tags origin main
+
+  # publish:
+  #   docker:
+  #     - image: cimg/node:22.17
+  #   resource_class: small
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: "."
+  #     - run:
+  #         name: Set npm token
+  #         command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+  #     - install-pnpm
+  #     - run:
+  #         name: Bump version
+  #         command: pnpm changeset version
+  #     - when:
+  #         condition: << pipeline.git.tag >>
+  #         steps:
+  #           - run:
+  #               name: Publish the build output to npm
+  #               command: |
+  #                 npm publish --access public
+  #     - unless:
+  #         condition: << pipeline.git.tag >>
+  #         steps:
+  #           - run:
+  #               name: Publish the build output to npm (dry-run)
+  #               command: |
+  #                 npm publish --access public --dry-run
 
 # Workflows
 workflows:
   release:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
+      - build
       - publish:
           context: npmjs.com
           requires:
@@ -132,5 +154,3 @@ workflows:
           filters:
             branches:
               only: main
-            tags:
-              only: /.*/
