@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Build packages
           command: |
-            /home/circleci/emsdk/emsdk_env.sh
+            source /home/circleci/emsdk/emsdk_env.sh
             pnpm -r build
       - save_cache:
           paths:
