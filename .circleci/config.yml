@@ -12,6 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Create emscripten directory
+          command: sudo mkdir -p /opt/emscripten
+      - run:
           name: Install Emscripten SDK
           workdir: /opt/emscripten
           command: |
