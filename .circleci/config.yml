@@ -56,7 +56,6 @@ jobs:
       - save_cache:
           paths:
             - .pnpm-store
-            - packages/libssh2/vendors
           key: *cache-pnpm-key
       - run:
           name: Build packages
