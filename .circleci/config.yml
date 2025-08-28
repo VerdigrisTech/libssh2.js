@@ -13,7 +13,10 @@ jobs:
       - checkout
       - run:
           name: Create emscripten directory
-          command: sudo mkdir -p /opt/emscripten
+          command: |
+            mkdir -p /opt/emscripten
+            whoami
+            chmod -R 755 /opt/emscripten
       - run:
           name: Install Emscripten SDK
           workdir: /opt/emscripten
