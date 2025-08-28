@@ -12,13 +12,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create emscripten directory
-          command: |
-            sudo mkdir -p /opt/emscripten
-            sudo chown -R $(whoami):$(whoami) /opt/emscripten
-      - run:
           name: Install Emscripten SDK
-          workdir: /opt/emscripten
+          workdir: /home/circleci
           command: |
             git clone https://github.com/emscripten-core/emsdk.git
             cd emsdk
@@ -52,7 +47,7 @@ jobs:
       - run:
           name: Build packages
           command: |
-            /opt/emscripten/emsdk/emsdk_env.sh
+            /home/circleci/emsdk/emsdk_env.sh
             pnpm -r build
       - save_cache:
           paths:
