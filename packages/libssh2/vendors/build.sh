@@ -114,7 +114,7 @@ build_zlib() {
             sed -i.bak 's/^AR=libtool$/AR=emar/' Makefile
             sed -i.bak2 's/^ARFLAGS=-o$/ARFLAGS=rcs/' Makefile
 
-            if ! emmake make -j4; then
+            if ! emmake make -j$(nproc); then
                 log_error "zlib build failed"
                 return 1
             fi
@@ -151,7 +151,7 @@ build_openssl() {
             sed -i.bak2 "s|AR=\$(CROSS_COMPILE)$(which emar)|AR=$(which emar)|" Makefile
             sed -i.bak3 "s|RANLIB=\$(CROSS_COMPILE)$(which emranlib)|RANLIB=$(which emranlib)|" Makefile
 
-            if ! emmake make build_sw -j4; then
+            if ! emmake make build_sw -j$(nproc); then
                 log_error "OpenSSL build failed"
                 return 1
             fi
