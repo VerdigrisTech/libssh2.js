@@ -52,7 +52,7 @@ jobs:
       - run:
           name: Build packages
           command: |
-            /opt/emscripten/emsdk_env.sh
+            /opt/emscripten/emsdk/emsdk_env.sh
             pnpm -r build
       - save_cache:
           paths:
