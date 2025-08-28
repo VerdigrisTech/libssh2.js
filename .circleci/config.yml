@@ -15,6 +15,8 @@ jobs:
           name: Create emscripten directory
           command: |
             sudo mkdir -p /opt/emscripten
+            echo $USER
+            sudo echo $USER
             sudo chown -R $USER:$USER /opt/emscripten
       - run:
           name: Install Emscripten SDK
