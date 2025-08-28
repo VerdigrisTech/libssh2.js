@@ -6,44 +6,80 @@ orbs:
 # Job definitions
 jobs:
   build:
-    executor: docker/docker
+    docker:
+      - image: cimg/node:22.18.0-browsers
     resource_class: large
     steps:
       - checkout
-      - setup_remote_docker
+      - run:
+          name: Install pnpm with Corepack
+          command: |
+            npm install -g corepack@latest
+            corepack enable
+            corepack prepare pnpm@latest-10 --activate
+            pnpm config set store-dir .pnpm-store
       - restore_cache:
           keys:
-            - &cache-key v1-libssh2-build-{{ .Branch }}-{{ .Revision }}
-            - v1-libssh2-build-{{ .Branch }}-
-            - v1-libssh2-build-
+            - &cache-pnpm-key v1-libssh2-pnpm-{{ .Branch }}-{{ checksum "pnpm-lock.yaml" }}
+            - v1-libssh2-pnpm-{{ .Branch }}
+            - v1-libssh2-pnpm-
+      - restore_cache:
+          keys:
+            - &cache-vendors-key v1-libssh2-vendors-{{ .Branch }}-{{ checksum "packages/libssh2/package.json" }}
+            - v1-libssh2-vendors-{{ .Branch }}
+            - v1-libssh2-vendors-
       - run:
-          name: Set up Docker Buildx context
-          command: docker buildx create --name libssh2-builder --use
-      - docker/build:
-          image: verdigristech/libssh2-wasm
-          use_buildkit: true
-          extra_build_args:
-            --progress=plain
-            --cache-from=type=local,src=/tmp/buildx-cache
-            --cache-to=type=local,mode=max,dest=/tmp/buildx-cache
-            --output=type=tar,dest=libssh2.tar
-      - run:
-          name: Extract the build output
-          command: |
-            mkdir -p dist
-            tar -xf libssh2.tar -C dist
+          name: Install dependencies
+          command: pnpm i -r
       - save_cache:
           paths:
-            - /tmp/buildx-cache
-          key: *cache-key
+            - .pnpm-store
+            - packages/libssh2/vendors
+          key: *cache-pnpm-key
+      - run:
+          name: Build packages
+          command: pnpm -r build
+      - save_cache:
+          paths:
+            - vendors
+          key: *cache-vendors-key
       - persist_to_workspace:
-          root: dist
+          root: packages/libssh2/dist
           paths:
             - libssh2.js
             - libssh2.wasm
-            - index.d.ts
+            - libssh2.d.ts
       - store_artifacts:
-          path: dist
+          path: packages/libssh2/dist
+
+      # - run:
+      #     name: Set up Docker Buildx context
+      #     command: docker buildx create --name libssh2-builder --use
+      # - docker/build:
+      #     image: verdigristech/libssh2-wasm
+      #     use_buildkit: true
+      #     extra_build_args:
+      #       --progress=plain
+      #       --cache-from=type=local,src=/tmp/buildx-cache
+      #       --cache-to=type=local,mode=max,dest=/tmp/buildx-cache
+      #       --output=type=tar,dest=libssh2.tar
+      # - run:
+      #     name: Extract the build output
+      #     command: |
+      #       mkdir -p dist
+      #       tar -xf libssh2.tar -C dist
+      # - save_cache:
+      #     paths:
+      #       - /tmp/buildx-cache
+      #     key: *cache-build-key
+      # - persist_to_workspace:
+      #     root: dist
+      #     paths:
+      #       - libssh2.js
+      #       - libssh2.wasm
+      #       - index.d.ts
+      # - store_artifacts:
+      #     path: dist
 
   publish:
     docker:
