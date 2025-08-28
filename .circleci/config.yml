@@ -7,10 +7,18 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:22.18.0-browsers
+      - image: cimg/python:3.13-node
     resource_class: large
     steps:
       - checkout
+      - run:
+          name: Install Emscripten SDK
+          workdir: /opt/emscripten
+          command: |
+            git clone https://github.com/emscripten-core/emsdk.git
+            cd emsdk
+            ./emsdk install latest
+            ./emsdk activate latest
       - run:
           name: Install pnpm with Corepack
           command: |
@@ -38,7 +46,9 @@ jobs:
           key: *cache-pnpm-key
       - run:
           name: Build packages
-          command: pnpm -r build
+          command: |
+            /opt/emscripten/emsdk_env.sh
+            pnpm -r build
       - save_cache:
           paths:
             - vendors
