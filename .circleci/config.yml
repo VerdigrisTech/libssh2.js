@@ -47,9 +47,9 @@ jobs:
             - v1-libssh2-pnpm-
       - restore_cache:
           keys:
-            - &cache-vendors-key v1-libssh2-vendors-{{ .Branch }}-{{ checksum "packages/libssh2/package.json" }}
-            - v1-libssh2-vendors-{{ .Branch }}
-            - v1-libssh2-vendors-
+            - &cache-vendors-key v2-libssh2-vendors-{{ .Branch }}-{{ checksum "packages/libssh2/package.json" }}
+            - v2-libssh2-vendors-{{ .Branch }}
+            - v2-libssh2-vendors-
       - run:
           name: Install dependencies
           command: pnpm i -r
