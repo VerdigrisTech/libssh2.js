@@ -33,16 +33,18 @@ const char* ssh2_version() {
 
 EMSCRIPTEN_KEEPALIVE
 int custom_send(libssh2_socket_t socket, const void *buffer, size_t length, int flags, void **abstract) {
+    // Since we only support one session per WebSocket, we don't need socket/flags/abstract
     return EM_ASM_INT({
-      return Module.customSend($0, $1, $2, $3, $4);
-    }, (int)socket, (int)buffer, (int)length, flags, (int)abstract);
+      return Module.customSend($0, $1);
+    }, (int)buffer, (int)length);
 }
 
 EMSCRIPTEN_KEEPALIVE
 int custom_recv(libssh2_socket_t socket, void *buffer, size_t length, int flags, void **abstract) {
+    // Since we only support one session per WebSocket, we don't need socket/flags/abstract
     return EM_ASM_INT({
-      return Module.customRecv($0, $1, $2, $3, $4);
-    }, (int)socket, (int)buffer, (int)length, flags, (int)abstract);
+      return Module.customRecv($0, $1);
+    }, (int)buffer, (int)length);
 }
 
 // =====================================
@@ -64,16 +66,26 @@ void ssh2_session_free(LIBSSH2_SESSION* session) {
     }
 }
 
-// Set session callback
+// Set session callback (modified to use predefined callbacks)
 EMSCRIPTEN_KEEPALIVE
-void ssh2_session_callback_set(LIBSSH2_SESSION* session, int cbtype, void* callback) {
-    libssh2_session_callback_set(session, cbtype, callback);
+void ssh2_session_callback_set_custom(LIBSSH2_SESSION* session, int cbtype) {
+    if (cbtype == LIBSSH2_CALLBACK_SEND) { // LIBSSH2_CALLBACK_SEND
+        libssh2_session_callback_set2(session, cbtype, (libssh2_cb_generic*)custom_send);
+    } else if (cbtype == LIBSSH2_CALLBACK_RECV) { // LIBSSH2_CALLBACK_RECV
+        libssh2_session_callback_set2(session, cbtype, (libssh2_cb_generic*)custom_recv);
+    }
 }
 
 // Perform handshake
 EMSCRIPTEN_KEEPALIVE
 int ssh2_session_handshake(LIBSSH2_SESSION* session, int socket) {
     return libssh2_session_handshake(session, socket);
+}
+
+// Perform handshake with custom transport (socket = 1)
+EMSCRIPTEN_KEEPALIVE
+int ssh2_session_handshake_custom(LIBSSH2_SESSION* session) {
+    return libssh2_session_handshake(session, 1); // 1 = custom socket descriptor
 }
 
 // Disconnect session

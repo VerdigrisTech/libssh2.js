@@ -60,9 +60,13 @@ declare module '@verdigris/libssh2.js' {
     KEYFILE_AUTH_FAILED = -48,
   }
 
-  // Callback function types
+  // Callback function types (simplified - one session per WebSocket)
   export type SendCallback = (bufPtr: number, length: number) => number;
   export type RecvCallback = (bufPtr: number, length: number) => number;
+
+  // Callback type constants for ssh2_session_callback_set_custom
+  export const LIBSSH2_CALLBACK_SEND = 5;
+  export const LIBSSH2_CALLBACK_RECV = 6;
 
   // Module options for initialization
   export interface ModuleOptions {
@@ -188,9 +192,10 @@ declare module '@verdigris/libssh2.js' {
 
     // Session management
     ssh2_session_init(): LIBSSH2_SESSION;
-    ssh2_session_handshake(session: LIBSSH2_SESSION): number;
-    ssh2_session_set_blocking(session: LIBSSH2_SESSION, blocking: number): number;
-    ssh2_session_callback_set(session: LIBSSH2_SESSION, cbtype: number, callback: (...args: any[]) => any): void;
+    ssh2_session_handshake(session: LIBSSH2_SESSION, socket: number): number;
+    ssh2_session_handshake_custom(session: LIBSSH2_SESSION): number;
+    ssh2_session_set_blocking(session: LIBSSH2_SESSION, blocking: number): void;
+    ssh2_session_callback_set_custom(session: LIBSSH2_SESSION, cbtype: number): void;
     ssh2_session_last_errno(session: LIBSSH2_SESSION): number;
     ssh2_session_last_error(session: LIBSSH2_SESSION): string;
     ssh2_session_disconnect(session: LIBSSH2_SESSION, reason: string): number;
