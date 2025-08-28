@@ -147,7 +147,9 @@ workflows:
     jobs:
       - build
       - publish:
-          context: npmjs.com
+          context:
+            - github
+            - npmjs.com
           requires:
             - build
           filters:
