@@ -109,6 +109,9 @@ jobs:
           sudo: true
       - npm-auth
       - run:
+          name: Install dev dependencies
+          command: pnpm i
+      - run:
           name: Bump versions (no-op if no changeset)
           # Bump versions and commit them (see .changeset/config.json)
           command: |
