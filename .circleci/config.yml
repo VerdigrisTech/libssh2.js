@@ -83,11 +83,14 @@ jobs:
             - packages/libssh2/vendors
           key: *cache-vendors-key
       - persist_to_workspace:
-          root: packages/libssh2/dist
+          root: packages
           paths:
-            - libssh2.js
-            - libssh2.wasm
-            - libssh2.d.ts
+            - libssh2/dist/libssh2.js
+            - libssh2/dist/libssh2.wasm
+            - libssh2/dist/libssh2.d.ts
+            - libssh2/vendors/libssh2
+            - libssh2/vendors/openssl
+            - libssh2/vendors/zlib
       - store_artifacts:
           path: packages/libssh2/dist
 
