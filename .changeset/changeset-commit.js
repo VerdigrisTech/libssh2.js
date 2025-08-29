@@ -1,6 +1,4 @@
-import { CommitFunctions } from "@changesets/types";
-
-const defaultCommitFunctions: CommitFunctions = {
+const defaultCommitFunctions = {
   async getAddMessage(changeset, options) {
     const skipCI = options?.skipCI === "add" || options?.skipCI === true;
     const skipMsg = skipCI ? `\n\n[skip ci]\n` : "";
@@ -25,4 +23,4 @@ ${skipCI ? `\n[skip ci]\n` : ""}`;
   },
 };
 
-export default defaultCommitFunctions;
+module.exports = defaultCommitFunctions;
