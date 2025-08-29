@@ -4,6 +4,18 @@ orbs:
   gh: circleci/github-cli@2.7.1
 
 commands:
+  install-emsdk:
+    description: |
+      Installs Emscripten SDK
+    steps:
+      - run:
+          name: Install Emscripten SDK
+          workdir: /home/circleci
+          command: |
+            git clone https://github.com/emscripten-core/emsdk.git
+            cd emsdk
+            ./emsdk install latest
+            ./emsdk activate latest
   install-pnpm:
     parameters:
       sudo:
@@ -46,14 +58,7 @@ jobs:
     resource_class: xlarge
     steps:
       - checkout
-      - run:
-          name: Install Emscripten SDK
-          workdir: /home/circleci
-          command: |
-            git clone https://github.com/emscripten-core/emsdk.git
-            cd emsdk
-            ./emsdk install latest
-            ./emsdk activate latest
+      - install-emsdk
       - install-pnpm:
           sudo: false
       - restore_cache:
@@ -101,6 +106,7 @@ jobs:
     steps:
       - checkout
       - gh/setup
+      - install-emsdk
       - attach_workspace:
           at: "."
       - restore_cache:
@@ -131,7 +137,9 @@ jobs:
           key: *cache-pnpm-key
       - run:
           name: Publish packages (no-op if nothing to publish)
-          command: pnpm changeset publish
+          command: |
+            source /home/circleci/emsdk/emsdk_env.sh
+            pnpm changeset publish
       - run:
           name: Sync tags
           command: git push --follow-tags origin main
