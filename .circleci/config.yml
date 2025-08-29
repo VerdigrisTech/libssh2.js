@@ -115,6 +115,8 @@ jobs:
           name: Bump versions (no-op if no changeset)
           # Bump versions and commit them (see .changeset/config.json)
           command: |
+            git config --global user.email "circleci@verdigris.co"
+            git config --global user.name "CircleCI"
             pnpm changeset version && git push origin main
       - run:
           name: Re-install dependencies in case of version bump
