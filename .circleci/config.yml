@@ -5,13 +5,28 @@ orbs:
 
 commands:
   install-pnpm:
+    parameters:
+      sudo:
+        type: boolean
+        default: false
     description: |
       Installs pnpm with Corepack and activates it
     steps:
+      - when:
+          condition: << parameters.sudo >>
+          steps:
+            - run:
+                name: Update Corepack
+                command: sudo npm install -g corepack@latest
+      - unless:
+          condition: << parameters.sudo >>
+          steps:
+            - run:
+                name: Update Corepack
+                command: npm install -g corepack@latest
       - run:
           name: Install pnpm with Corepack
           command: |
-            npm install -g corepack@latest
             corepack enable
             corepack prepare pnpm@latest-10 --activate
             pnpm config set store-dir .pnpm-store
@@ -39,7 +54,8 @@ jobs:
             cd emsdk
             ./emsdk install latest
             ./emsdk activate latest
-      - install-pnpm
+      - install-pnpm:
+          sudo: false
       - restore_cache:
           keys:
             - &cache-pnpm-key v1-libssh2-pnpm-{{ .Branch }}-{{ checksum "pnpm-lock.yaml" }}
@@ -89,7 +105,8 @@ jobs:
             - &cache-pnpm-key v1-libssh2-pnpm-{{ .Branch }}-{{ checksum "pnpm-lock.yaml" }}
             - v1-libssh2-pnpm-{{ .Branch }}
             - v1-libssh2-pnpm-
-      - install-pnpm
+      - install-pnpm:
+          sudo: true
       - npm-auth
       - run:
           name: Bump versions (no-op if no changeset)
